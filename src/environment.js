@@ -74,6 +74,8 @@ export const ipfsDefaultConf = {
 const networkConfig = getNetworkConfig(networkType)
 export const network = networkConfig.settings
 export const providers = networkConfig.providers
+export const connectGraphEndpoint = networkConfig.connectGraphEndpoint
+export const enableMigrateBanner = networkConfig.enableMigrateBanner || false
 
 export const contractAddresses = {
   ensRegistry: networkConfig.addresses.ensRegistry,

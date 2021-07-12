@@ -4,7 +4,7 @@ import { Spring, animated } from 'react-spring'
 import { useTheme } from '@aragon/ui'
 import { EthereumAddressType, ClientThemeType } from './prop-types'
 import { useWallet } from './wallet'
-import { network, web3Providers } from './environment'
+import { network, web3Providers, enableMigrateBanner } from './environment'
 import { useClientTheme } from './client-theme'
 import { useRouting } from './routing'
 import initWrapper, { pollConnectivity } from './aragonjs-wrapper'
@@ -22,6 +22,7 @@ import CustomToast from './components/CustomToast/CustomToast'
 import OrgView from './components/OrgView/OrgView'
 
 import { isKnownRepo } from './repo-utils'
+
 import {
   APPS_STATUS_ERROR,
   APPS_STATUS_READY,
@@ -33,6 +34,13 @@ import {
   DAO_STATUS_UNLOADED,
 } from './symbols'
 
+const MIGRATION_BANNER_HIDE = 'MIGRATION_BANNER_HIDE&'
+const MIGRATION_LAST_DATE_ELIGIBLE_TIMESTAMP = new Date(
+  '2021-05-14T15:43:08Z'
+).getTime()
+
+const getMigrateBannerKey = address => `${MIGRATION_BANNER_HIDE}${address}`
+
 const INITIAL_DAO_STATE = {
   apps: [],
   appIdentifiers: {},
@@ -42,6 +50,7 @@ const INITIAL_DAO_STATE = {
   permissions: {},
   permissionsLoading: true,
   repos: [],
+  showMigrateBanner: false,
 }
 
 const SELECTOR_NETWORKS = [
@@ -141,10 +150,19 @@ class App extends React.Component {
       },
       provider: web3Providers.default,
       walletAccount,
-      onDaoAddress: ({ address, domain }) => {
+      onDaoAddress: ({ address, domain, createdAt }) => {
         log('dao address', address)
         log('dao domain', domain)
+        log('dao createdAt', createdAt)
+        const hideMigrateBanner = getMigrateBannerKey(address)
+        const showMigrateBanner =
+          enableMigrateBanner &&
+          createdAt &&
+          !localStorage.getItem(hideMigrateBanner) &&
+          createdAt < MIGRATION_LAST_DATE_ELIGIBLE_TIMESTAMP
+
         this.setState({
+          showMigrateBanner,
           daoStatus: DAO_STATUS_READY,
           daoAddress: { address, domain },
         })
@@ -246,6 +264,11 @@ class App extends React.Component {
       })
   }
 
+  closeMigrateBanner = address => {
+    this.setState({ showMigrateBanner: false })
+    localStorage.setItem(getMigrateBannerKey(address), String(true))
+  }
+
   handleIdentityCancel = () => {
     const { identityIntent } = this.state
     identityIntent.reject(new Error('Identity modification cancelled'))
@@ -308,6 +331,7 @@ class App extends React.Component {
       signatureBag,
       web3,
       wrapper,
+      showMigrateBanner,
     } = this.state
 
     const { address: intentAddress = null, label: intentLabel = '' } =
@@ -388,6 +412,10 @@ class App extends React.Component {
                               visible={routing.mode.name === 'org'}
                               web3={web3}
                               wrapper={wrapper}
+                              showMigrateBanner={showMigrateBanner}
+                              closeMigrateBanner={() =>
+                                this.closeMigrateBanner(daoAddress.address)
+                              }
                             />
                           </div>
                         </PermissionsProvider>

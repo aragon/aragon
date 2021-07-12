@@ -25,6 +25,7 @@ import {
 } from './web3-utils'
 import SandboxedWorker from './worker/SandboxedWorker'
 import WorkerSubscriptionPool from './worker/WorkerSubscriptionPool'
+import { getOrganizationByAddress } from './services/gql'
 
 const POLL_DELAY_CONNECTIVITY = 2000
 
@@ -267,7 +268,18 @@ const initWrapper = async (
     throw new DAONotFound(dao)
   }
 
-  onDaoAddress({ address: daoAddress, domain: dao })
+  const daoData = {
+    address: daoAddress,
+    domain: dao,
+  }
+
+  const data = await getOrganizationByAddress(daoAddress)
+  if (data?.createdAt) {
+    // transform into ml seconds
+    daoData.createdAt = parseInt(data.createdAt) * 1000
+  }
+
+  onDaoAddress(daoData)
 
   const wrapper = new Aragon(daoAddress, {
     provider,

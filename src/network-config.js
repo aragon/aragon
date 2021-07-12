@@ -9,8 +9,10 @@ const localEnsRegistryAddress = getEnsRegistryAddress()
 const fortmaticApiKey = getFortmaticApiKey()
 const portisDappId = getPortisDappId()
 
+// connectGraphEndpoint is https://github.com/aragon/connect/tree/master/packages/connect-thegraph
 export const networkConfigs = {
   main: {
+    enableMigrateBanner: false,
     addresses: {
       ensRegistry:
         localEnsRegistryAddress || '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
@@ -18,6 +20,8 @@ export const networkConfigs = {
     nodes: {
       defaultEth: 'wss://mainnet.eth.aragon.network/ws',
     },
+    connectGraphEndpoint:
+      'https://api.thegraph.com/subgraphs/name/aragon/aragon-mainnet',
     settings: {
       chainId: 1,
       name: 'Mainnet',
@@ -33,6 +37,7 @@ export const networkConfigs = {
     ].filter(p => p),
   },
   rinkeby: {
+    enableMigrateBanner: true,
     addresses: {
       ensRegistry:
         localEnsRegistryAddress || '0x98df287b6c145399aaa709692c8d308357bc085d',
@@ -40,6 +45,8 @@ export const networkConfigs = {
     nodes: {
       defaultEth: 'wss://rinkeby.eth.aragon.network/ws',
     },
+    connectGraphEndpoint:
+      'https://api.thegraph.com/subgraphs/name/aragon/aragon-rinkeby',
     settings: {
       chainId: 4,
       name: 'Rinkeby testnet',
@@ -56,6 +63,7 @@ export const networkConfigs = {
     ].filter(p => p),
   },
   ropsten: {
+    enableMigrateBanner: true,
     addresses: {
       ensRegistry:
         localEnsRegistryAddress || '0x6afe2cacee211ea9179992f89dc61ff25c61e923',
@@ -63,6 +71,7 @@ export const networkConfigs = {
     nodes: {
       defaultEth: 'wss://ropsten.eth.aragon.network/ws',
     },
+    connectGraphEndpoint: null,
     settings: {
       chainId: 3,
       name: 'Ropsten testnet',
@@ -73,12 +82,14 @@ export const networkConfigs = {
     providers: [{ id: 'provided' }, { id: 'frame' }],
   },
   local: {
+    enableMigrateBanner: true,
     addresses: {
       ensRegistry: localEnsRegistryAddress,
     },
     nodes: {
       defaultEth: 'ws://localhost:8545',
     },
+    connectGraphEndpoint: null,
     settings: {
       // Local development environments by convention use
       // a chainId of value 1337, but for the sake of configuration
@@ -94,6 +105,7 @@ export const networkConfigs = {
   // xDai is an experimental chain in the Aragon Client. It's possible
   // and expected that a few things will break.
   xdai: {
+    enableMigrateBanner: false,
     addresses: {
       ensRegistry:
         localEnsRegistryAddress || '0xaafca6b0c89521752e559650206d7c925fd0e530',
@@ -101,6 +113,7 @@ export const networkConfigs = {
     nodes: {
       defaultEth: 'wss://xdai.poanetwork.dev/wss',
     },
+    connectGraphEndpoint: null,
     settings: {
       chainId: 100,
       name: 'xDai',
@@ -115,12 +128,14 @@ export const networkConfigs = {
     ].filter(p => p),
   },
   unknown: {
+    enableMigrateBanner: true,
     addresses: {
       ensRegistry: localEnsRegistryAddress,
     },
     nodes: {
       defaultEth: 'ws://localhost:8545',
     },
+    connectGraphEndpoint: null,
     settings: {
       name: `Unknown network`,
       shortName: 'Unknown',

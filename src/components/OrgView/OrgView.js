@@ -32,6 +32,7 @@ import SignerPanel from '../SignerPanel/SignerPanel'
 import UpgradeBanner from '../Upgrade/UpgradeBanner'
 import UpgradeModal from '../Upgrade/UpgradeModal'
 import UpgradeOrganizationPanel from '../Upgrade/UpgradeOrganizationPanel'
+import MigrateBanner from '../Migrate/MigrateBanner'
 
 // Remaining viewport width after the menu panel is factored in
 const AppWidthContext = React.createContext(0)
@@ -52,6 +53,8 @@ function OrgView({
   visible,
   web3,
   wrapper,
+  showMigrateBanner,
+  closeMigrateBanner,
 }) {
   const theme = useTheme()
   const routing = useRouting()
@@ -186,6 +189,12 @@ function OrgView({
           flex-shrink: 0;
         `}
       >
+        {showMigrateBanner && (
+          <MigrateBanner
+            visible={showMigrateBanner}
+            onClose={closeMigrateBanner}
+          />
+        )}
         <UpgradeBanner
           visible={canUpgradeOrg}
           onMoreInfo={handleUpgradeModalOpen}
@@ -402,6 +411,8 @@ OrgView.propTypes = {
   visible: PropTypes.bool.isRequired,
   web3: PropTypes.object,
   wrapper: AragonType,
+  showMigrateBanner: PropTypes.bool,
+  closeMigrateBanner: PropTypes.func.isRequired,
 }
 
 OrgView.defaultProps = {
